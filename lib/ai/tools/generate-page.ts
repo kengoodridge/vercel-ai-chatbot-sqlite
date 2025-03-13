@@ -60,7 +60,7 @@ export const generatePage = tool({
             message: 'Unauthorized: You do not have permission to add pages to this project'
           };
         }
-      } catch (e) {
+      } catch (e: any) {
         return {
           status: 'error',
           message: `Failed to verify project: ${e.message || 'Unknown error'}`
@@ -122,11 +122,7 @@ The HTML should be a complete page that can be rendered directly in a browser.`;
         let modelToUse = DEFAULT_CHAT_MODEL;
         try {
           if (!myProvider.languageModel(modelToUse)) {
-            console.warn(`Default model ${modelToUse} not available, falling back to alternative model`);
-            // Try to find an available model
-            const availableModels = Object.keys(myProvider.languageModels || {});
-            modelToUse = availableModels.length > 0 ? availableModels[0] : 'chat-model-small';
-            console.log(`Using model: ${modelToUse}`);
+            throw(`Default model ${modelToUse} not available, falling back to alternative model`);
           }
         } catch (err) {
           console.warn(`Error accessing models, using fallback: ${err}`);
@@ -148,7 +144,10 @@ The HTML should be a complete page that can be rendered directly in a browser.`;
           
           if (type === 'object') {
             const { object } = delta;
-            pageResponse = object;
+            pageResponse = {
+              htmlContent: object.htmlContent || '',
+              path: object.path
+            };
           }
         }
         
@@ -265,7 +264,7 @@ The HTML should be a complete page that can be rendered directly in a browser.`;
           status: 'success',
           message: `Created page at ${newPage.path}`
         };
-      } catch (dbError) {
+      } catch (dbError : any) {
         return {
           status: 'error',
           message: `Failed to save page to database: ${dbError.message || 'Unknown error'}`

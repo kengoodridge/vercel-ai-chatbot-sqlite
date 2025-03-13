@@ -8,8 +8,8 @@ import { auth } from '@/app/(auth)/auth';
 const FileSchema = z.object({
   file: z
     .instanceof(Blob)
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
-      message: 'File size should be less than 5MB',
+    .refine((file) => file.size <= 30 * 1024 * 1024, {
+      message: 'File size should be less than 30MB',
     })
     // Update the file type based on the kind of files you want to accept
     .refine((file) => ['image/jpeg', 'image/png'].includes(file.type), {

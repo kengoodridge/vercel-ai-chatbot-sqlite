@@ -1,1 +1,0 @@
-ALTER TABLE `Endpoint` ADD `language` text DEFAULT 'javascript' NOT NULL;

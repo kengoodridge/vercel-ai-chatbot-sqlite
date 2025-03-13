@@ -181,25 +181,34 @@ The endpoint should process parameters from the request and return a JSON respon
     let code = '';
     let httpMethod = 'GET';
     
-    try {
+try {
       console.log(`Generating ${language} endpoint for: ${description} using model: ${model}`);
-      
+
       const { fullStream } = streamObject({
         model: myProvider.languageModel(model),
         system: systemPrompt,
         prompt: userPrompt,
         schema: endpointSchema,
       });
-      
+
       // Collect the response from the stream
       let endpointResponse: z.infer<typeof endpointSchema> | undefined;
-      
+
       for await (const delta of fullStream) {
         const { type } = delta;
-        
+
         if (type === 'object') {
           const { object } = delta;
-          endpointResponse = object;
+          // Ensure the object has all required properties before assigning
+          if (object && typeof object.code === 'string') {
+            endpointResponse = {
+              code: object.code,
+              path: object.path,
+              // Filter out any undefined values and ensure all elements are strings
+              parameters: object.parameters?.filter((param): param is string => typeof param === 'string'),
+              httpMethod: object.httpMethod,
+            };
+          }
         }
       }
       

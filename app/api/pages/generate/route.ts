@@ -196,7 +196,10 @@ The HTML should be a complete page that can be rendered directly in a browser.`;
         
         if (type === 'object') {
           const { object } = delta;
-          pageResponse = object;
+          pageResponse = {
+            htmlContent: object.htmlContent || '',
+            path: object.path
+          };
         }
       }
       

@@ -1,5 +1,5 @@
 import * as vm from 'node:vm';
-import { Python } from 'pythonia';
+import { python } from 'pythonia';
 import { 
   getAllEndpoints,
   getAllPages,
@@ -132,79 +132,79 @@ export class DynamicRouteManager {
             language: 'javascript'
           };
         }
-      } else if (language === 'python') {
-        // Python execution using pythonia
-        try {
-          // First, register a placeholder function while Python loads (async)
-          this.dynamicRoutes[path] = {
-            type: 'endpoint',
-            path,
-            parameters,
-            function: () => ({ 
-              error: 'Python endpoint is still initializing', 
-              status: 'loading' 
-            }),
-            httpMethod,
-            language: 'python'
-          };
+//       } else if (language === 'python') {
+//         // Python execution using pythonia
+//         try {
+//           // First, register a placeholder function while Python loads (async)
+//           this.dynamicRoutes[path] = {
+//             type: 'endpoint',
+//             path,
+//             parameters,
+//             function: () => ({ 
+//               error: 'Python endpoint is still initializing', 
+//               status: 'loading' 
+//             }),
+//             httpMethod,
+//             language: 'python'
+//           };
           
-          // Create a Python wrapper for the code
-          const pythonWrapper = `
-def endpoint_function(params):
-    try:
-${code.split('\n').map(line => '        ' + line).join('\n')}
-    except Exception as e:
-        return {"error": f"Python execution error: {str(e)}"}
-          `;
+//           // Create a Python wrapper for the code
+//           const pythonWrapper = `
+// def endpoint_function(params):
+//     try:
+// ${code.split('\n').map(line => '        ' + line).join('\n')}
+//     except Exception as e:
+//         return {"error": f"Python execution error: {str(e)}"}
+//           `;
           
-          // Initialize Python interpreter
-          const py = await Python.startup();
+//           // Initialize Python interpreter
+//           const py = await Python.startup();
           
-          // Execute the Python code
-          await py.exec(pythonWrapper);
+//           // Execute the Python code
+//           await py.exec(pythonWrapper);
           
-          // Get the Python function
-          const pyFunc = await py.eval('endpoint_function');
+//           // Get the Python function
+//           const pyFunc = await py.eval('endpoint_function');
           
-          // Store in dynamic routes dictionary with Python function reference
-          this.dynamicRoutes[path] = {
-            type: 'endpoint',
-            path,
-            parameters,
-            // Create a JavaScript function that calls the Python function
-            function: async (params: any) => {
-              try {
-                // Convert params to Python compatible format
-                const result = await pyFunc(params);
-                // Convert result back to JavaScript
-                return JSON.parse(await result.toString());
-              } catch (error) {
-                console.error(`Error executing Python endpoint ${path}:`, error);
-                return {
-                  error: 'Python execution error',
-                  details: error instanceof Error ? error.message : String(error)
-                };
-              }
-            },
-            httpMethod,
-            language: 'python',
-            pythonInstance: pyFunc
-          };
-        } catch (execError) {
-          console.error(`Error compiling Python code for endpoint ${path}:`, execError);
-          // Store a placeholder function that returns an error
-          this.dynamicRoutes[path] = {
-            type: 'endpoint',
-            path,
-            parameters,
-            function: () => ({ 
-              error: 'Python endpoint code compilation error', 
-              details: execError instanceof Error ? execError.message : String(execError) 
-            }),
-            httpMethod,
-            language: 'python'
-          };
-        }
+//           // Store in dynamic routes dictionary with Python function reference
+//           this.dynamicRoutes[path] = {
+//             type: 'endpoint',
+//             path,
+//             parameters,
+//             // Create a JavaScript function that calls the Python function
+//             function: async (params: any) => {
+//               try {
+//                 // Convert params to Python compatible format
+//                 const result = await pyFunc(params);
+//                 // Convert result back to JavaScript
+//                 return JSON.parse(await result.toString());
+//               } catch (error) {
+//                 console.error(`Error executing Python endpoint ${path}:`, error);
+//                 return {
+//                   error: 'Python execution error',
+//                   details: error instanceof Error ? error.message : String(error)
+//                 };
+//               }
+//             },
+//             httpMethod,
+//             language: 'python',
+//             pythonInstance: pyFunc
+//           };
+//         } catch (execError) {
+//           console.error(`Error compiling Python code for endpoint ${path}:`, execError);
+//           // Store a placeholder function that returns an error
+//           this.dynamicRoutes[path] = {
+//             type: 'endpoint',
+//             path,
+//             parameters,
+//             function: () => ({ 
+//               error: 'Python endpoint code compilation error', 
+//               details: execError instanceof Error ? execError.message : String(execError) 
+//             }),
+//             httpMethod,
+//             language: 'python'
+//           };
+//         }
       } else {
         throw new Error(`Unsupported language: ${language}`);
       }

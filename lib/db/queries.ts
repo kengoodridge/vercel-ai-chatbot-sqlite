@@ -825,7 +825,8 @@ export async function getEndpointById({ id }: { id: string }): Promise<Endpoint 
         userId: endpoint.userId,
         createdAt: endpoint.createdAt,
         projectName: project.name,
-        userEmail: user.email
+        userEmail: user.email,
+        language: endpoint.language
       })
       .from(endpoint)
       .leftJoin(project, eq(endpoint.projectId, project.id))
@@ -845,7 +846,8 @@ export async function getEndpointById({ id }: { id: string }): Promise<Endpoint 
       userId: result.userId,
       createdAt: result.createdAt,
       projectName: result.projectName ?? undefined,
-      userEmail: result.userEmail ?? undefined
+      userEmail: result.userEmail ?? undefined,
+      language: result.language ?? 'javascript'
     };
     return selectedEndpoint;
   } catch (error) {
@@ -867,7 +869,8 @@ export async function getEndpointByPath({ path }: { path: string }): Promise<End
         userId: endpoint.userId,
         createdAt: endpoint.createdAt,
         projectName: project.name,
-        userEmail: user.email
+        userEmail: user.email,
+        language: endpoint.language
       })
       .from(endpoint)
       .leftJoin(project, eq(endpoint.projectId, project.id))
@@ -887,7 +890,8 @@ export async function getEndpointByPath({ path }: { path: string }): Promise<End
       userId: result.userId,
       createdAt: result.createdAt,
       projectName: result.projectName ?? undefined,
-      userEmail: result.userEmail ?? undefined
+      userEmail: result.userEmail ?? undefined,
+      language: result.language ?? 'javascript'
     };
     return selectedEndpoint;
   } catch (error) {
@@ -909,7 +913,8 @@ export async function getEndpointsByProjectId({ projectId }: { projectId: string
         userId: endpoint.userId,
         createdAt: endpoint.createdAt,
         projectName: project.name,
-        userEmail: user.email
+        userEmail: user.email,
+        language: endpoint.language
       })
       .from(endpoint)
       .leftJoin(project, eq(endpoint.projectId, project.id))
@@ -928,7 +933,8 @@ export async function getEndpointsByProjectId({ projectId }: { projectId: string
       userId: result.userId,
       createdAt: result.createdAt,
       projectName: result.projectName ?? undefined,
-      userEmail: result.userEmail ?? undefined
+      userEmail: result.userEmail ?? undefined,
+      language: result.language ?? 'javascript'
     }));
   } catch (error) {
     console.error('Failed to get endpoints by project from database');
@@ -949,7 +955,8 @@ export async function getEndpointsByUserId({ userId }: { userId: string }): Prom
         userId: endpoint.userId,
         createdAt: endpoint.createdAt,
         projectName: project.name,
-        userEmail: user.email
+        userEmail: user.email,
+        language: endpoint.language
       })
       .from(endpoint)
       .leftJoin(project, eq(endpoint.projectId, project.id))
@@ -968,7 +975,8 @@ export async function getEndpointsByUserId({ userId }: { userId: string }): Prom
       userId: result.userId,
       createdAt: result.createdAt,
       projectName: result.projectName ?? undefined,
-      userEmail: result.userEmail ?? undefined
+      userEmail: result.userEmail ?? undefined,
+      language: result.language ?? 'javascript'
     }));
   } catch (error) {
     console.error('Failed to get endpoints by user from database');
@@ -989,7 +997,8 @@ export async function getAllEndpoints(): Promise<Endpoint[]> {
         userId: endpoint.userId,
         createdAt: endpoint.createdAt,
         projectName: project.name,
-        userEmail: user.email
+        userEmail: user.email,
+        language: endpoint.language
       })
       .from(endpoint)
       .leftJoin(project, eq(endpoint.projectId, project.id))
@@ -1007,7 +1016,8 @@ export async function getAllEndpoints(): Promise<Endpoint[]> {
       userId: result.userId,
       createdAt: result.createdAt,
       projectName: result.projectName ?? undefined,
-      userEmail: result.userEmail ?? undefined
+      userEmail: result.userEmail ?? undefined,
+      language: result.language ?? 'javascript'
     }));
   } catch (error) {
     console.error('Failed to get all endpoints from database');
