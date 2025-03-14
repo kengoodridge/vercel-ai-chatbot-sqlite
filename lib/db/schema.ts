@@ -164,3 +164,47 @@ export type Endpoint = InferSelectModel<typeof endpoint> & {
   projectName?: string;
   userEmail?: string;
 };
+
+export const tool = sqliteTable('Tool', {
+  name: text('name').primaryKey().notNull(),
+  description: text('description').notNull(),
+  inputSchema: text('input_schema').notNull(),
+  outputSchema: text('output_schema'),
+  category: text('category'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+export type Tool = InferSelectModel<typeof tool>;
+
+export const toolTag = sqliteTable(
+  'ToolTag',
+  {
+    toolName: text('tool_name')
+      .notNull()
+      .references(() => tool.name, { onDelete: 'cascade' }),
+    tag: text('tag').notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.toolName, table.tag] }),
+    };
+  },
+);
+
+export type ToolTag = InferSelectModel<typeof toolTag>;
+
+// Note: we don't define FTS5 virtual tables in the schema because they're managed via raw SQL
+
+// Note: Vector embeddings use libSQL's native F32_BLOB column type
+// This is managed via raw SQL in migrations since Drizzle doesn't have native support for it yet
+export const toolEmbedding = sqliteTable('ToolEmbedding', {
+  toolName: text('tool_name')
+    .primaryKey()
+    .notNull()
+    .references(() => tool.name, { onDelete: 'cascade' }),
+  // The actual embedding is stored in a F32_BLOB column defined in migrations
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+export type ToolEmbedding = InferSelectModel<typeof toolEmbedding>;

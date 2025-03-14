@@ -3,20 +3,29 @@ import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getEmbeddingDimension } from '../ai/embeddings';
 
 config({
   path: '.env.local',
 });
 
 const runMigrate = async () => {
-  // Ensure DATABASE_URL is used for the database location
+  // Get database URL from environment or use default
   const dbUrl = process.env.DATABASE_URL || 'file:./local.db';
   console.log(`Using database URL: ${dbUrl}`);
   
-  const client = createClient({
-    url: dbUrl,
-  });
-  const db = drizzle(client);
+  // Get embedding dimension based on the configured provider
+  let embeddingDimension = 768; // Default dimension
+  try {
+    embeddingDimension = await getEmbeddingDimension();
+    console.log(`✓ Determined embedding dimension from provider: ${embeddingDimension}`);
+  } catch (error) {
+    console.warn(`⚠️ Using default embedding dimension (${embeddingDimension}):`, error);
+  }
+  
+  // Create libSQL client
+  const client = createClient({ url: dbUrl });
+  // const db = drizzle(client);
 
   console.log('⏳ Running migrations...');
   const start = Date.now();
@@ -34,7 +43,24 @@ const runMigrate = async () => {
     for (const migrationFile of migrationFiles) {
       console.log(`Processing migration file: ${migrationFile}`);
       const sqlFile = path.join(migrationsDir, migrationFile);
-      const sql = fs.readFileSync(sqlFile, 'utf8');
+      let sql = fs.readFileSync(sqlFile, 'utf8');
+      
+      // Special handling for tool table migration that contains the embedding vector size
+      if (migrationFile === '0004_tools_table.sql') {
+        console.log(`⚙️ Dynamically setting embedding dimension to ${embeddingDimension} in ${migrationFile}`);
+        
+        // Replace the F32_BLOB size in the ToolEmbedding table
+        sql = sql.replace(
+          /embedding F32_BLOB\((\d+)\)/g, 
+          `embedding F32_BLOB(${embeddingDimension})`
+        );
+        
+        // Also update the dimension field default value
+        sql = sql.replace(
+          /dimension INTEGER NOT NULL DEFAULT (\d+)/g,
+          `dimension INTEGER NOT NULL DEFAULT ${embeddingDimension}`
+        );
+      }
       
       // Split statements at statement-breakpoint
       const statements = sql.split('--> statement-breakpoint').map(stmt => stmt.trim()).filter(Boolean);
@@ -48,6 +74,10 @@ const runMigrate = async () => {
 
     const end = Date.now();
     console.log('✅ Migrations completed in', end - start, 'ms');
+    
+    // Close connection
+    client.close();
+    
     process.exit(0);
   } catch (err) {
     console.error('❌ Migration failed');

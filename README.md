@@ -37,6 +37,25 @@
 
 This template ships with OpenAI `gpt-4o` as the default. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
 
+## Vector Embedding Support
+
+This chatbot supports vector embeddings for AI tool discovery, allowing semantic searching for tools based on natural language descriptions:
+
+- **Multiple Embedding Providers**
+  - [Ollama](https://ollama.ai) with `nomic-embed-text` (default)
+  - [Google Gemini](https://ai.google.dev/) embeddings
+  - Configurable via `EMBEDDING_PROVIDER` environment variable
+
+- **SQLite Vector Storage**
+  - Uses [libSQL](https://github.com/tursodatabase/libsql)'s native vector support (F32_BLOB columns)
+  - Automatic vector indexing with cosine similarity search
+  - Fallback to text search when vector search is unavailable
+
+- **Tool Discovery**
+  - Semantic search for tools based on natural language queries
+  - Tool embedding updates on creation and modification
+  - Complementary full-text search using FTS5
+
 ## Deploy Your Own
 
 You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:

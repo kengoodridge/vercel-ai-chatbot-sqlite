@@ -407,6 +407,8 @@ export async function getProjectById({ id }: { id: string }): Promise<Project | 
       .where(eq(project.id, id));
     
     // Convert null to undefined for userEmail
+    if (!result) return undefined;
+
     const selectedProject: Project = {
       id: result.id,
       name: result.name,
@@ -415,7 +417,6 @@ export async function getProjectById({ id }: { id: string }): Promise<Project | 
       createdAt: result.createdAt,
       userEmail: result.userEmail ?? undefined
     };
-    
     return selectedProject;
   } catch (error) {
     console.error('Failed to get project by id from database');
