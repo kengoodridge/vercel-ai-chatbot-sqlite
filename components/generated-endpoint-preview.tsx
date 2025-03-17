@@ -229,11 +229,9 @@ export function GeneratedEndpointPreview({
             </div>
             
             {endpointInfo.code ? (
-              <CodeBlock
-                language={endpointInfo.language === 'javascript' ? 'typescript' : 'python'}
-                value={endpointInfo.code}
-                inline={false}
-              />
+              <pre className="text-sm w-full overflow-x-auto bg-gray-50 dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900">
+                <code className="whitespace-pre-wrap break-words">{endpointInfo.code}</code>
+              </pre>
             ) : (
               <div className="p-4 bg-gray-50 rounded-md text-gray-600">
                 No code available. This might be due to an issue with code generation or data passing.

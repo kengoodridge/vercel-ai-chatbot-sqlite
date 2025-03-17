@@ -21,33 +21,44 @@ export function CodeBlock({
   value,
   ...props
 }: CodeBlockProps) {
-  // If value is provided directly, use it instead of children
-  const codeContent = value || children;
-  
-  // If language is provided and there's no className, construct one
-  const codeClassName = className || (language ? `language-${language}` : '');
-  
-  if (!inline) {
-    return (
-      <div className="not-prose flex flex-col">
-        <pre
-          {...props}
-          className={`text-sm w-full overflow-x-auto dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900`}
-        >
-          <code className={`${codeClassName} whitespace-pre-wrap break-words`}>
-            {codeContent}
-          </code>
-        </pre>
-      </div>
-    );
-  } else {
-    return (
+  // For direct usage with value prop
+  if (value !== undefined) {
+    return inline ? (
       <code
-        className={`${codeClassName} text-sm bg-zinc-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md`}
+        className="text-sm bg-gray-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md"
         {...props}
       >
-        {codeContent}
+        {value}
+      </code>
+    ) : (
+      <pre
+        className="text-sm w-full overflow-x-auto bg-gray-50 dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900"
+      >
+        <code className="whitespace-pre-wrap break-words">{value}</code>
+      </pre>
+    );
+  }
+  
+  // For react-markdown integration
+  const match = /language-(\w+)/.exec(className || '');
+  
+  if (inline) {
+    return (
+      <code
+        className="text-sm bg-gray-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md"
+        {...props}
+      >
+        {children}
       </code>
     );
   }
+
+  // Block code
+  return (
+    <span
+      className="text-sm w-full overflow-x-auto bg-gray-50 dark:bg-zinc-900 p-1 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900"
+    >
+      <code className="whitespace-pre-wrap break-words">{children}</code>
+    </span>
+  );
 }
