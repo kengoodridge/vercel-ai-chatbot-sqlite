@@ -8,6 +8,7 @@ import {
 } from '@/lib/db/queries';
 import { dynamicRouteManager } from '@/lib/dynamic-route-manager';
 import { myProvider, DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
+import { pageGenerationPrompt } from '@/lib/ai/prompts/page';
 
 export const generatePage = tool({
   description: 'Generate a dynamic web page for a project',
@@ -78,40 +79,11 @@ export const generatePage = tool({
         htmlContent: z.string(),
       });
       
-      // Create a system prompt for generating a web page
-      const systemPrompt = `You are a web page generator that creates modern, responsive HTML pages.
-Create a complete HTML page that includes:
-1. Proper HTML5 structure with doctype and meta tags
-2. CSS styling using modern best practices (prefer internal CSS for this case)
-3. Responsive design that works on mobile and desktop
-4. Optional JavaScript for interactivity if appropriate
-5. Well-structured content that matches the description
-
-Your page should:
-- Be visually appealing and professional
-- Use semantic HTML elements
-- Include meaningful content related to the description
-- Be complete and ready to render in a browser
-- Be accessible and follow web standards
-- Use modern design patterns
-- Include Bootstrap or other common CSS libraries
-
-Avoid:
-- External resources that may not be available
-- Overly complex JavaScript
-- Placeholder content (create meaningful content based on the description)
-- Incomplete implementations`;
+      // Use the common prompts from the prompts.ts file
+      const systemPrompt = pageGenerationPrompt.system;
       
-      // Create a user prompt with detailed context
-      const userPrompt = `Create a web page about: ${description}
-This page will be registered at path: ${pagePath}
-The page is for project: ${project.name}
-
-Please provide:
-1. An optimized path (optional, I'll use the default if not provided)
-2. The complete HTML content for the page
-
-The HTML should be a complete page that can be rendered directly in a browser.`;
+      // Use the common user prompt generator
+      const userPrompt = pageGenerationPrompt.getPageGenerationPrompt(description, pagePath, project.name);
       
       // Call the language model to generate the page
       let generatedPath = pagePath;

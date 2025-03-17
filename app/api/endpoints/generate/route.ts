@@ -143,37 +143,16 @@ export async function POST(request: NextRequest) {
       httpMethod: z.enum(['GET', 'POST']).optional(),
     });
     
-    // Create a system prompt based on the language
-    const systemPrompt = language === 'javascript' 
-      ? `You are an API endpoint generator that creates JavaScript endpoints for a web application. 
-Create a well-structured endpoint handler function named 'endpoint_function' that takes a 'params' object as input.
-Implement the endpoint as described by the user.
-Ensure the code is well-documented with JSDoc comments.
-The code should properly validate inputs and handle errors.
-Return a JSON object with necessary data.
-DO NOT use any external libraries or Node.js specific APIs.
-The endpoint should be stateless and not rely on external APIs.
-The function MUST be named 'endpoint_function'.`
-      : `You are an API endpoint generator that creates Python endpoints for a web application.
-Create a well-structured endpoint handler function named 'endpoint_function' that takes a 'params' dictionary as input.
-Implement the endpoint as described by the user.
-Ensure the code is well-documented with docstrings.
-The code should properly validate inputs and handle errors.
-Return a dictionary with necessary data.
-DO NOT use any external libraries except for Python standard library.
-The endpoint should be stateless and not rely on external APIs.
-The function MUST be named 'endpoint_function'.`;
+    // Import the common prompts
+    const { endpointGenerationPrompt } = await import('@/lib/ai/prompts/endpoint');
     
-    // Create a user prompt with detailed context
-    const userPrompt = `Create an endpoint that does the following: ${description}
-The endpoint will be registered at path: ${basePath}
-Please provide:
-1. An optimized path (optional, I'll use the default if not provided)
-2. Required parameters as an array of strings
-3. The endpoint implementation code in ${language}
-4. The HTTP method (GET or POST)
-
-The endpoint should process parameters from the request and return a JSON response.`;
+    // Get the appropriate system prompt based on the language
+    const systemPrompt = language === 'javascript' 
+      ? endpointGenerationPrompt.systemJavaScript
+      : endpointGenerationPrompt.systemPython;
+    
+    // Use the common user prompt generator
+    const userPrompt = endpointGenerationPrompt.getEndpointGenerationPrompt(description, basePath, language);
 
     // Call the language model to generate the endpoint
     let generatedPath = basePath;
