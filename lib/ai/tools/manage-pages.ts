@@ -7,6 +7,7 @@ import {
   getPagesByUserId,
   deletePage as deletePageDB
 } from '@/lib/db/queries';
+import { dynamicRouteManager } from '@/lib/dynamic-route-manager';
 
 export const getPage = tool({
   description: 'Get details of a specific page by ID',
@@ -177,6 +178,14 @@ export const deletePage = tool({
           status: 'error',
           message: 'Failed to delete page'
         };
+      }
+      
+      // Also unregister the page from the dynamic route manager
+      try {
+        await dynamicRouteManager.unregisterPage(existingPage.path);
+      } catch (unregisterError) {
+        console.warn('Warning: Failed to unregister page from route manager:', unregisterError);
+        // Continue since the database deletion was successful
       }
       
       return {

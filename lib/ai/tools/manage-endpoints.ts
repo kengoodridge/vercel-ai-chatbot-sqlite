@@ -18,24 +18,24 @@ export const getEndpoint = tool({
     try {
       // Get the current user session
       const session = await auth();
-      
+
       if (!session || !session.user || !session.user.id) {
         return {
           status: 'error',
           message: 'Unauthorized: User not authenticated'
         };
       }
-      
+
       // Get endpoint directly from the database
       const endpoint = await getEndpointById({ id });
-      
+
       if (!endpoint) {
         return {
           status: 'error',
           message: 'Endpoint not found'
         };
       }
-      
+
       // Verify ownership
       if (endpoint.userId !== session.user.id) {
         return {
@@ -43,7 +43,7 @@ export const getEndpoint = tool({
           message: 'Unauthorized: You do not have permission to access this endpoint'
         };
       }
-      
+
       return {
         status: 'success',
         data: endpoint,
@@ -67,17 +67,17 @@ export const listEndpointsByProject = tool({
     try {
       // Get the current user session
       const session = await auth();
-      
+
       if (!session || !session.user || !session.user.id) {
         return {
           status: 'error',
           message: 'Unauthorized: User not authenticated'
         };
       }
-      
+
       // Get endpoints for the project
       const endpoints = await getEndpointsByProjectId({ projectId });
-      
+
       // Verify at least one endpoint belongs to the user
       if (endpoints.length > 0 && endpoints[0].userId !== session.user.id) {
         return {
@@ -85,7 +85,7 @@ export const listEndpointsByProject = tool({
           message: 'Unauthorized: You do not have permission to access endpoints for this project'
         };
       }
-      
+
       return {
         status: 'success',
         data: endpoints,
@@ -107,17 +107,17 @@ export const listEndpoints = tool({
     try {
       // Get the current user session
       const session = await auth();
-      
+
       if (!session || !session.user || !session.user.id) {
         return {
           status: 'error',
           message: 'Unauthorized: User not authenticated'
         };
       }
-      
+
       // Get endpoints for the user
       const endpoints = await getEndpointsByUserId({ userId: session.user.id });
-      
+
       return {
         status: 'success',
         data: endpoints,
@@ -141,24 +141,24 @@ export const deleteEndpoint = tool({
     try {
       // Get the current user session
       const session = await auth();
-      
+
       if (!session || !session.user || !session.user.id) {
         return {
           status: 'error',
           message: 'Unauthorized: User not authenticated'
         };
       }
-      
+
       // Verify the endpoint exists and get its details
       const existingEndpoint = await getEndpointById({ id });
-      
+
       if (!existingEndpoint) {
         return {
           status: 'error',
           message: 'Endpoint not found'
         };
       }
-      
+
       // Verify ownership
       if (existingEndpoint.userId !== session.user.id) {
         return {
@@ -166,20 +166,20 @@ export const deleteEndpoint = tool({
           message: 'Unauthorized: You do not have permission to delete this endpoint'
         };
       }
-      
+
       // Delete the endpoint from the database
       const success = await deleteEndpointDB({ 
         id, 
         userId: session.user.id 
       });
-      
+
       if (!success) {
         return {
           status: 'error',
           message: 'Failed to delete endpoint'
         };
       }
-      
+
       // Also unregister the endpoint from the dynamic route manager
       try {
         await dynamicRouteManager.unregisterEndpoint(existingEndpoint.path);
@@ -187,7 +187,7 @@ export const deleteEndpoint = tool({
         console.warn('Warning: Failed to unregister endpoint from route manager:', unregisterError);
         // Continue since the database deletion was successful
       }
-      
+
       return {
         status: 'success',
         message: 'Endpoint deleted successfully'

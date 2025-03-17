@@ -369,6 +369,68 @@ export class DynamicRouteManager {
     return path;
   }
   
+  // Unregister an endpoint by path
+  async unregisterEndpoint(path: string): Promise<boolean> {
+    await this.ensureInitialized();
+    
+    const sanitizedPath = this.sanitizePath(path);
+    console.log(`Unregistering endpoint: ${sanitizedPath}`);
+    
+    if (!this.dynamicRoutes[sanitizedPath]) {
+      console.warn(`Attempted to unregister non-existent endpoint: ${sanitizedPath}`);
+      return false;
+    }
+    
+    const route = this.dynamicRoutes[sanitizedPath];
+    
+    if (route.type !== 'endpoint') {
+      console.warn(`Attempted to unregister non-endpoint route: ${sanitizedPath}`);
+      return false;
+    }
+    
+    // Clean up any Python instance if it exists
+    if (route.pythonInstance) {
+      try {
+        await route.pythonInstance.destroy();
+      } catch (error) {
+        console.error(`Error cleaning up Python instance for ${sanitizedPath}:`, error);
+        // Continue with deletion even if cleanup fails
+      }
+    }
+    
+    // Remove the route from our registry
+    delete this.dynamicRoutes[sanitizedPath];
+    console.log(`Successfully unregistered endpoint: ${sanitizedPath}`);
+    
+    return true;
+  }
+  
+  // Unregister a page by path
+  async unregisterPage(path: string): Promise<boolean> {
+    await this.ensureInitialized();
+    
+    const sanitizedPath = this.sanitizePath(path);
+    console.log(`Unregistering page: ${sanitizedPath}`);
+    
+    if (!this.dynamicRoutes[sanitizedPath]) {
+      console.warn(`Attempted to unregister non-existent page: ${sanitizedPath}`);
+      return false;
+    }
+    
+    const route = this.dynamicRoutes[sanitizedPath];
+    
+    if (route.type !== 'page') {
+      console.warn(`Attempted to unregister non-page route: ${sanitizedPath}`);
+      return false;
+    }
+    
+    // Remove the route from our registry
+    delete this.dynamicRoutes[sanitizedPath];
+    console.log(`Successfully unregistered page: ${sanitizedPath}`);
+    
+    return true;
+  }
+  
   // For debugging - get all registered routes
   getRegisteredRoutes(): string[] {
     return Object.keys(this.dynamicRoutes);

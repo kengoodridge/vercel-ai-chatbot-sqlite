@@ -26,7 +26,10 @@ export const myProvider = customProvider({
     // @ts-ignore - Ignore type incompatibility between different AI SDK versions
     'title-model': google('gemini-2.0-flash-exp'),
     // @ts-ignore - Ignore type incompatibility between different AI SDK versions
-    'artifact-model': google('gemini-2.0-flash-exp')
+    'artifact-model': google('gemini-2.0-flash-exp'),
+    // Add Groq models
+    // @ts-ignore - Ignore type incompatibility between different AI SDK versions
+    'groq': groq('llama-3.3-70b-versatile'),
   }
 });
 
@@ -47,6 +50,9 @@ export const chatModels: Array<ChatModel> = [
     name: 'gemini-2.0-flash-exp',
     description: 'Gemini flash 2.0',
   },
-
+  {
+    id: 'groq',
+    name: 'llama-3.3-70b-versatile',
+    description: 'Groq llama-3.3-70b-versatile',
+  },
 ];
-
