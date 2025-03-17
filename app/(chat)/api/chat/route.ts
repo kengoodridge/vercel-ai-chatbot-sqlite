@@ -33,6 +33,7 @@ import {
   deleteProject
 } from '@/lib/ai/tools/manage-projects';
 import { generatePage } from '@/lib/ai/tools/generate-page';
+import { generateEndpoint } from '@/lib/ai/tools/generate-endpoint';
 
 export const maxDuration = 60;
 
@@ -88,6 +89,7 @@ export async function POST(request: Request) {
                 'updateProject',
                 'deleteProject',
                 'generatePage',
+                'generateEndpoint',
               ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
@@ -105,6 +107,7 @@ export async function POST(request: Request) {
           updateProject,
           deleteProject,
           generatePage,
+          generateEndpoint,
         },
         onFinish: async ({ response, reasoning }) => {
           if (session.user?.id) {

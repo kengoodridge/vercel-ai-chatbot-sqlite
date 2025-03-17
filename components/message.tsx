@@ -26,6 +26,7 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import { GeneratedPagePreview } from './generated-page-preview';
+import { GeneratedEndpointPreview } from './generated-endpoint-preview';
 
 const PurePreviewMessage = ({
   chatId,
@@ -169,6 +170,8 @@ const PurePreviewMessage = ({
                           />
                         ) : toolName === 'generatePage' ? (
                           <GeneratedPagePreview pageInfo={result} />
+                        ) : toolName === 'generateEndpoint' ? (
+                          <GeneratedEndpointPreview endpointInfo={result} />
                         ) : (
                           <pre>{JSON.stringify(result, null, 2)}</pre>
                         )}
