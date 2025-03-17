@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 // Use any type to bypass type incompatibility between different versions
 // @ts-ignore
 import { google } from '@ai-sdk/google';
+import { groq } from '@ai-sdk/groq';
 import { fireworks } from '@ai-sdk/fireworks';
 import {
   customProvider,

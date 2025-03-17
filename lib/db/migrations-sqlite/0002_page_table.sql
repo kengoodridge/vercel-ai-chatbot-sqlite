@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS `Page` (
 	`projectId` text NOT NULL,
 	`userId` text NOT NULL,
 	`createdAt` integer NOT NULL,
-	FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON UPDATE no action ON DELETE CASCADE,
+	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE no action ON DELETE CASCADE
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS `Page_path_unique` ON `Page`(`path`);

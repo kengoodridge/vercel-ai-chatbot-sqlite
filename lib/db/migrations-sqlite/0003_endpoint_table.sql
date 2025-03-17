@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS `Endpoint` (
 	`userId` text NOT NULL,
 	`createdAt` integer NOT NULL,
 	`language` text DEFAULT 'javascript' NOT NULL,
-	FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON UPDATE no action ON DELETE CASCADE,
+	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE no action ON DELETE CASCADE
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS `Endpoint_path_unique` ON `Endpoint`(`path`);
